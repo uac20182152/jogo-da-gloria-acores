@@ -1,13 +1,415 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Langar&family=VT323&family=Bungee&family=Rowdies&display=swap');
+
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    /*font-family: 'Press Start 2P', cursive;*/
+    font-family: 'Rowdies' , cursive;
+    font-size: 12pt;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+button {
+    font-family: 'Rowdies' , cursive;
+}
+
+input {
+    font-family: 'Rowdies', cursive;
+}
+
+#boardTiles {
+    margin: auto;
+    text-align: center;
+    background-image: url("./images/background_ocean.png");
+    min-height: 90vh;
+    padding: 30px;
+}
+
+.tile {
+    min-width: 90px;
+    min-height: 90px;
+    height: 7vw;
+    width: 7vw;
+    display: inline-flex;
+    background-size: contain;
+    margin: 2px;
+}
+.playerSlot {
+    height: 100%;
+    width: 100%;
+    display: inline-flex;
+    background-size: contain;
+}
+
+.numberDiv {
+    width: 100%;
+    height: 100%;
+    position:relative;
+    text-align: left;
+    background-size: contain;
+}
+
+.numberSpan {
+    color:white;
+    position: absolute;
+    bottom: 0;
+    margin: 8px;
+    user-select: none;
+}
+
+#obfuscator {
+    z-index: 2;
+    display: none;
+    background-color: gray;
+    opacity: 0.5;
+    min-width: 100%;
+    min-height: 100%;
+    position: absolute;
+}
+
+#difficultySelector {
+    text-align: center;
+    margin: auto;
+}
+
+#answerSelector {
+    text-align: center;
+    margin: auto;
+}
+
+#dummyFooter {
+    height: 33vh;
+    width: 100%;
+}
+
+#footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: auto;
+    background-color: #dc3545;
+    width: auto; /*50%;*/
+    min-width: 350px;
+    z-index: 4;
+    color: white;
+    border-radius: 50px;
+    padding: 30px;
+    margin: 10px;
+    border: 3px solid white;
+    box-shadow: 10px 10px 10px #0006;
+    display: flex;
+}
+
+#shop {
+}
+
+#shopTableWrapper {
+    max-height: 20vh;
+    max-width: 650px;
+    margin: auto;
+    min-width: 300px;
+    border: 3px dashed #3333336b;
+    border-radius: 20px;
+}
+
+#shopTable {
+    margin: auto;
+    font-size: 1.3em;
+    width: 100%;
+}
+
+#shopHeader {
+    text-align: center;
+}
+
+#shopFooter {
+    text-align: center;
+}
+
+#answerFeedback {
+    text-align: center;
+}
+
+#specialTileDescription {
+    width: 50%;
+    border: solid 1px black;
+    background-color: white;
+    position:absolute;
+    display: none;
+    z-index: 3;
+    top:0;
+    right:0;
+
+}
+
+#taskDiv {
+    text-align: center;
+}
+
+#chestDiv {
+    text-align: center;
+}
+
+#chestDialogue {
+    margin: 10px 0 20px;
+}
+
+.keyButton {
+    text-align: left;
+}
+
+#chestContinueButton {
+    margin: 10px;
+}
+
+#chestFeedbackDiv {
+    text-align: center;
+}
+
+#chestFeedbackP {
+    max-width: 400px;
+}
+
+#chestHazardDiv {
+    text-align: center;
+}
+
+#gameSummaryDiv {
+    text-align: center;
+}
+
+#playerStatuses {
+    width: 100%;
+    display: table;
+    min-height: 10vh;
+}
+
+#playerStatusesRow {
+    display: table-row;
+}
+
+.playerStatus {
+    display: table-cell;
+    text-align: center;
+    width: 50%;
+}
+
+
+ul.navbar-nav {
+    display: inline-flex;
+    justify-content: right;
+    width: 100%;
+}
+
+ul.navbar-nav li {
+    display: list-item;
+    flex: 1;
+    text-align: left;
+    white-space: nowrap;
+}
+
+#diceDiv {
+    padding: 20px;
+    text-align: center;
+    margin: auto;
+}
+
+#gloriaHeader {
+    background-color: #768dd3!important;
+    text-align: center;
+}
+
+#header {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+}
+
+.dropdown-item {
+    text-align: left;
+}
+
+.bg-warning {
+    background-color: darkorange!important;
+}
+
+.difficultyButton {
+    width: 20vw;
+    min-width: 300px;
+    margin:5px;
+}
+
+.answerButton {
+    width: 20vw;
+    min-width: 150px;
+    margin:5px;
+    font-size: 1.15em;
+    border: 3px solid white;
+}
+
+.shopQuantity {
+    display: none;
+    max-width: 60px;
+    width: 10vw;
+}
+
+.purchaseButton {
+    margin: auto;
+}
+
+#exitAnswerFeedbackButton, #exitShopButton, .purchaseButton, #diceButton, .difficultyButton{
+    border: solid 3px white;
+    margin: 3px;
+}
+
+#taskToast {
+    position: fixed;
+    z-index: 2;
+    bottom: 0;
+    right: 0;
+    margin: 10px;
+    background-color: black;
+    min-width: 300px;
+    box-shadow: 10px 10px 10px #0006;
+    display: none;
+    border-radius: 20px;
+    border: 3px solid white;
+    color: white;
+}
+
+#communityWorkToast {
+    position: fixed;
+    z-index: 2;
+    bottom: 0;
+    right: 0;
+    margin: 10px;
+    background-color: black;
+    max-width: 300px;
+    box-shadow: 10px 10px 10px #0006;
+    display: none;
+    border-radius: 20px;
+    border: 3px solid white;
+    color: white;
+}
+
+.toast-header {
+    background-color: #00000021;
+    color: white;
+    border-radius: 20px 20px 0 0;
+
+}
+
+.dropdown-menu {
+    max-height: 30vh;
+    overflow-y: auto;
+}
+
+#gameDiv {
+    display: none;
+}
+
+.btn-outline-light {
+    border: 3px solid white;
+}
+
+#hazardItemsUl{
+    max-width: 200px;
+    margin: auto;
+    text-align: left;
+}
+
+#hazardDescriptionP {
+    max-width: 500px;
+    margin: auto;
+}
+
+#gameSummaryItems {
+    display: none;
+}
+
+#logoSmall {
+    margin: auto;
+}
+
+#playerSelectorDiv {
+    color: white;
+    background-color: #4f60a5;
+    height:100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#registrationDivs {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    display: inline-flex;
+    flex-wrap: wrap;
+}
+
+.registrationDiv {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#bigLogoImg {
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 40px;
+    width: 40vw;
+    height: auto;
+    min-width: 300px;
+}
+
+.playerNameInput {
+    margin: 5px;
+}
+
+#onePlayerNameInput::placeholder, #playerANameInput::placeholder {
+    color: #b05886;
+}
+
+#playerBNameInput::placeholder {
+    color: #5460c5;
+}
+
+.nav-link {
+    color: white;
+}
+
+.dropdown-menu{
+    text-align: left;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    color: white;
+}
+
+.inventoryItem {
+    padding: .25rem 1rem;
+}
+
+#shopTable {
+    font-size: 12pt;
+}
+
+.shopItemImg {
+    padding: 10px;
+}
+
+#questionImageDiv {
+    max-width: 60vh;
+    margin: auto;
+    min-width: 300px;
+    width: 90%;
+    height: 40vh;
+    background-size: cover;
+    border-radius: 40px;
+    border: 3px solid white;
+}
+
+#questionText {
+    max-width: 40ch;
+}
+
+.btn-close {
+    border-radius: 100%;
 }

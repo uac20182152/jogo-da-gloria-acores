@@ -1,0 +1,116 @@
+{
+  "Chave Azul": {
+    "name": "Chave Azul",
+    "price": 5,
+    "single": true,
+    "image": "chave_azul.png"
+  },
+  "Chave Vermelha": {
+    "name": "Chave Vermelha",
+    "price": 5,
+    "single": true,
+    "image": "chave_vermelha.png"
+  },
+  "Chave Verde": {
+    "name": "Chave Verde",
+    "price": 5,
+    "single": true,
+    "image": "chave_verde.png"
+  },
+  "Bilhete: Ilhéu de Vila Franca": {
+    "name": "Bilhete: Ilhéu de Vila Franca",
+    "price": 3,
+    "single": true,
+    "image": "bilhete_saomiguel.png"
+  },
+  "Bilhete: Whale watching": {
+    "name": "Bilhete: Whale watching",
+    "price": 3,
+    "single": true,
+    "image": "bilhete_santamaria.png"
+  },
+  "Bilhete: Visita guiada ao Vulcão dos Capelinhos": {
+    "name": "Bilhete: Visita guiada ao Vulcão dos Capelinhos",
+    "price": 2,
+    "single": true,
+    "image": "bilhete_faial.png"
+  },
+  "Bilhete: Visita guiada à Rocha dos Bordões": {
+    "name": "Bilhete: Visita guiada à Rocha dos Bordões",
+    "price": 2,
+    "single": true,
+    "image": "bilhete_flores.png"
+  },
+  "Bilhete: Viagem guiada à Fajã do St.º Cristo": {
+    "name": "Bilhete: Viagem guiada à Fajã do St.º Cristo",
+    "price": 2,
+    "single": true,
+    "image": "bilhete_saojorge.png"
+  },
+  "Bilhete: Viagem guiada à Lagoa do Caldeirão": {
+    "name": "Bilhete: Viagem guiada à Lagoa do Caldeirão",
+    "price": 2,
+    "single": true,
+    "image": "bilhete_corvo.png"
+  },
+  "Bilhete: Subida à montanha do Pico": {
+    "name": "Bilhete: Subida à montanha do Pico",
+    "price": 3,
+    "single": true,
+    "image": "bilhete_pico.png"
+  },
+  "Bilhete: Tourada à corda": {
+    "name": "Bilhete: Tourada à corda",
+    "price": 2,
+    "single": true,
+    "image": "bilhete_terceira.png"
+  },
+  "Bilhete: Furna do Enxofre": {
+    "name": "Bilhete: Furna do Enxofre",
+    "price": 2,
+    "single": true,
+    "image": "bilhete_graciosa.png"
+  },
+  "Cozido das Furnas": {
+    "name": "Cozido das Furnas",
+    "price": 3,
+    "single": true,
+    "image": "cozido_das_furnas.png"
+  },
+  "Corda": {
+    "name": "Corda",
+    "price": 2,
+    "single": false,
+    "image": "corda.png"
+  },
+  "Máscara": {
+    "name": "Máscara",
+    "price": 2,
+    "single": false,
+    "image": "mascara.png"
+  },
+  "Protetor solar": {
+    "name": "Protetor solar",
+    "price": 2,
+    "single": false,
+    "image": "protetor_solar.png"
+  },
+  "Souvenir": {
+    "name": "Souvenir",
+    "price": 1,
+    "single": false,
+    "image": "souvenir.png"
+  },
+  "Garrafa de água": {
+    "name": "Garrafa de água",
+    "price": 1,
+    "single": false,
+    "image": "garrafa_de_agua.png"
+  },
+  "null": {
+    "name": null,
+    "price": null,
+    "single": null,
+    "image": null
+  }
+}
