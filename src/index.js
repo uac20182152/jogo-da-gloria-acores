@@ -3,6 +3,14 @@ import ReactDOM from 'react-dom';
 import Draggable from 'react-draggable';
 import './index.css';
 
+// DEBUG GLOBALS
+const DICE_GENERATOR = function* () {yield 11; yield 50;}(); //Math.ceil(Math.random() * 6)
+const PLAYER_A_LIVES = 5;
+const PLAYER_A_COINS = 0;
+const PLAYER_A_MAP_PIECES = 0;
+const PLAYER_B_LIVES = 5;
+const PLAYER_B_COINS = 0;
+const PLAYER_B_MAP_PIECES = 0;
 
 class Tile extends React.Component {
 
@@ -102,7 +110,8 @@ class Board extends React.Component {
 
     componentDidMount() {
         document.getElementById("tile1A").style.backgroundImage = 'url("images/playerA.png")';
-        document.getElementById("tile1B").style.backgroundImage = 'url("images/playerB.png")';
+        if (this.props.numberOfPlayers === 2)
+            document.getElementById("tile1B").style.backgroundImage = 'url("images/playerB.png")';
     }
 
     async componentDidUpdate(prevProps, prevState, snapshot) {
@@ -112,7 +121,7 @@ class Board extends React.Component {
             await new Promise(resolve => setTimeout(resolve, 500));
             for (let i = 0; i < this.props.lastDiceValue; i++) {
                 document.getElementById("tile" + currentPos + character).style.backgroundImage = null;
-                currentPos = (currentPos >= this.numberOfTiles) ? 1 : (currentPos + 1);
+                currentPos = (currentPos >= this.props.numberOfTiles) ? 1 : (currentPos + 1);
                 document.getElementById("tile" + currentPos + character).scrollIntoView(false);
                 document.getElementById("tile" + currentPos + character).style.backgroundImage = 'url("images/player' + character + '.png")';
                 await new Promise(resolve => setTimeout(resolve, 400));
@@ -128,6 +137,7 @@ function PlayerInventory(props) {
             id={"player" + props.char + "Inventory"}
             className="dropdown-menu"
             aria-labelledby={"navbarDropdown" + props.char}
+            style={{maxWidth: "270px"}}
         >
             {/********************************************************************************************************/}
             {/* props.playerInventory tem a estrutura  {name: quantity,}.
@@ -158,7 +168,7 @@ class PlayerStatus extends React.Component {
 
         let lives = Array(this.props.lives)
             .fill(null)
-            .map((_) => <img src="images/life.png" alt="life" height="32px"/>);
+            .map((_) => <img src="images/life.png" alt="life" height="32px"  className="playerStatusIcon"/>);
 
         return (
             <nav
@@ -168,88 +178,79 @@ class PlayerStatus extends React.Component {
                 ((this.props.belongsToCurrentPlayer) ? "d-table-cell" : "d-none d-lg-table-cell")}
 
             >
-                <div className="container-fluid">
-                    <a
-                        id={playerChar + "Name"}
-                        className="navbar-brand"
-                        href="#"
-                    >
-                        {this.props.name}
-                    </a>
-                    <button
-                        className="navbar-toggler"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target={"#navbarSupportedContent" + char}
-                        aria-controls={"navbarSupportedContent" + char}
-                        aria-expanded="false"
-                        aria-label="Toggle navigation"
-                    >
-                        <span className="navbar-toggler-icon"></span>
-                    </button>
-                    <div
-                        className="collapse navbar-collapse"
-                        id={"navbarSupportedContent" + char}
-                    >
-                        <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li className="nav-item" key="lives">
-                                <a id={playerChar + "Lives"}
-                                   className="nav-link active"
-                                   aria-current="page"
-                                   href="#"
-                                >
-                                    <div>
-                                        {lives}
-                                    </div>
+                <h2 className="text-center text-white">{this.props.name}</h2>
+                <ul className="d-inline-flex m-auto p-0 text-nowrap">
+                    <li className="nav-item d-none d-md-block d-lg-block" key="lives">
+                        <a id={playerChar + "Lives"}
+                           className="nav-link active"
+                           aria-current="page"
+                           href="#"
+                        >
+                            <div>
+                                {lives}
+                            </div>
 
-                                </a>
-                            </li>
+                        </a>
+                    </li>
 
-                            <li className="nav-item dropdown" key="inventory">
-                                <a
-                                    className="nav-link dropdown-toggle"
-                                    href="#"
-                                    id={"navbarDropdown" + char}
-                                    role="button"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false"
-                                >
-                                    Inventário
-                                </a>
-                                <PlayerInventory
-                                    char={char}
-                                    playerInventory={this.props.playerInventory}
-                                    shopInventory={this.props.shopInventory}
-                                />
-                            </li>
+                    <li className="nav-item d-block d-block d-md-none d-lg-none" key="lives">
+                        <a id={playerChar + "Lives"}
+                           className="nav-link active"
+                           aria-current="page"
+                           href="#"
+                        >
+                            <div>
+                                <img src="images/life.png" alt="life" height="32px"  className="playerStatusIcon"/>
+                                &nbsp;x&nbsp;{this.props.lives}
+                            </div>
 
-                            <li className="nav-item" key="coins">
-                                <a
-                                    className="nav-link"
-                                    href="#">
-                                    <img src="images/coin.png" alt="coins"/> &nbsp; x &nbsp;
-                                    <span id={playerChar + "Coins"}>
-                                        {this.props.coins}
-                                    </span>
-                                </a>
-                            </li>
+                        </a>
+                    </li>
 
-                            <li className="nav-item" key="mapPieces">
-                                <a
-                                    className="nav-link"
-                                    href="#"
-                                >
-                                    <img src="images/map_icon.png"/>
-                                    &nbsp; x &nbsp;
-                                    <span id={playerChar + "Map"}>
-                                        {this.props.mapPieces}
-                                    </span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
+                    <li className="nav-item dropdown d-block" key="inventory">
+                        <a
+                            className="nav-link dropdown-toggle"
+                            href="#"
+                            id={"navbarDropdown" + char}
+                            role="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                        >
+                            <img src="images/bag.png" className="playerStatusIcon"/>
+                        </a>
+                        <PlayerInventory
+                            char={char}
+                            playerInventory={this.props.playerInventory}
+                            shopInventory={this.props.shopInventory}
+                        />
+                    </li>
+
+                    <li className="nav-item d-block" key="coins">
+                        <a
+                            className="nav-link"
+                            href="#">
+                            <img src="images/coin.png" alt="coins" className="playerStatusIcon"/> &nbsp; x &nbsp;
+                            <span id={playerChar + "Coins"}>
+                                            {this.props.coins}
+                                        </span>
+                        </a>
+                    </li>
+
+                    <li className="nav-item d-block" key="mapPieces">
+                        <a
+                            className="nav-link"
+                            href="#"
+                        >
+                            <img src="images/map_icon.png" className="playerStatusIcon"/>
+                            &nbsp; x &nbsp;
+                            <span id={playerChar + "Map"}>
+                                            {this.props.mapPieces}
+                                        </span>
+                        </a>
+                    </li>
+                </ul>
+        </nav>
+
         );
     }
 }
@@ -272,16 +273,20 @@ function PlayerStatuses(props) {
                     shopInventory={props.shopInventory}
                     belongsToCurrentPlayer={props.currentPlayer === "A"}
                 />
-                <PlayerStatus
-                    character="B"
-                    name={playerB.name}
-                    lives={playerB.lives}
-                    coins={playerB.coins}
-                    mapPieces={playerB.mapPieces}
-                    playerInventory={playerB.inventory}
-                    shopInventory={props.shopInventory}
-                    belongsToCurrentPlayer={props.currentPlayer === "B"}
-                />
+                {(props.numberOfPlayers === 2) ?
+                    <PlayerStatus
+                        character="B"
+                        name={playerB.name}
+                        lives={playerB.lives}
+                        coins={playerB.coins}
+                        mapPieces={playerB.mapPieces}
+                        playerInventory={playerB.inventory}
+                        shopInventory={props.shopInventory}
+                        belongsToCurrentPlayer={props.currentPlayer === "B"}
+                    />
+                    :
+                    null
+                }
             </div>
         </div>
     )
@@ -317,7 +322,7 @@ class GameWizard extends React.Component {
     }
 
     onShopExit() {
-        if (this.props.currentPlayer.task) {
+        if (this.props.currentPlayer.task.valueOf()) {
             this.setState({currentStep: 5});
 
         } else {
@@ -327,7 +332,7 @@ class GameWizard extends React.Component {
 
     onTaskCompletion() {
         this.props.onTaskCompletion();
-        if (this.props.currentPlayer.chest) {
+        if (this.props.currentPlayer.chest && !this.props.currentPlayer.chest.opened) {
             this.setState({currentStep: 6});
 
         } else {
@@ -343,16 +348,30 @@ class GameWizard extends React.Component {
 
     render() {
         let bgClass = (this.props.currentPlayer.char === "A") ? "bg-danger" : "bg-primary";
-        if (this.props.winner) bgClass = {"A": "bg-danger", "B": "bg-primary"}[this.props.winner.character];
-        if (this.props.winner && this.state.currentStep !== -1) this.setState({currentStep: -1});
+        if (this.props.loser)
+            bgClass = {
+                "B": "bg-danger",
+                "A": (this.props.numberOfPlayers === 2) ? "bg-primary" : "bg-danger"
+            }[this.props.loser.character];
+
+        if (this.props.loser && this.state.currentStep !== -1) this.setState({currentStep: -1});
         let componentToRender;
         switch (this.state.currentStep) {
             case -1:
                 componentToRender =
                     <div id="gameSummaryDiv">
-                        <img src={`/images/winner${this.props.winner.character}.png`} draggable="false" alt="vencedor"/>
-                        <h1>{this.props.winner.name} ganhou!</h1>
-                        <h2>Parabéns!</h2>
+                        {(this.props.numberOfPlayers === 2 || this.props.loser.character === "B") ?
+                            <div>
+                                <img src={`/images/winner${this.props.loser.opponent.character}.png`} draggable="false" alt="vencedor"/>
+                                <h1>{this.props.loser.opponent.name} ganhou!</h1>
+                                <h2>Parabéns!</h2>
+                            </div>
+                            :
+                            <div>
+                                <img src={`/images/loserA.png`} draggable="false" alt="perdedor"/>
+                                <h1>Perdeu o jogo!</h1>
+                            </div>
+                        }
                     </div>;
                 break;
 
@@ -400,7 +419,6 @@ class GameWizard extends React.Component {
                         details={this.props.currentPlayer.chest}
                         keys={this.props.currentPlayer.keys}
                         onKeySelection={(keyName) => this.props.onChestKeySelection(keyName)}
-                        hasHazardItems={this.props.currentPlayer.hasHazardItems}
                         onCompletion={(skipped, hasHazardItems) => this.onChestCompletion(skipped, hasHazardItems)}
                     />;
                 break;
@@ -418,6 +436,17 @@ class GameWizard extends React.Component {
                 >
                     {/*<img id="logoSmall" src="images/logo_horizontal.png" height="70px"/>*/}
                     {componentToRender}
+
+                    <Help
+                        buttonId="wizardHelpButton"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                             className="bi bi-question-circle" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                            <path
+                                d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
+                        </svg>
+                    </Help>
                 </div>
             </Draggable>
         );
@@ -427,7 +456,6 @@ class GameWizard extends React.Component {
 class Dice extends React.Component {
     constructor(props) {
         super(props);
-
         this.state = {
             value: 1
         }
@@ -439,24 +467,27 @@ class Dice extends React.Component {
             document.getElementById("diceImageId").src = "images/dice" + (Math.ceil(Math.random() * 6)) + ".png";
             await new Promise(resolve => setTimeout(resolve, 100 + i * 20));
         }
+        if (diceValue < 1 || diceValue > 6) diceValue = "bug";
         document.getElementById("diceImageId").src = "images/dice" + diceValue + ".png";
         await new Promise(resolve => setTimeout(resolve, 2000));
     }
 
     async throw() {
-        let newValue = Math.ceil(Math.random() * 6);
+        //let newValue = Math.ceil(Math.random() * 6);
         // TODO: DEBUG DEBUG
-        newValue = 11;
+        //newValue = 11;
+        let newValue = DICE_GENERATOR.next().value;
         await this.shuffle(newValue);
         this.setState({value: newValue});
         this.props.onThrow(newValue);
     }
 
     render() {
+        let value = (0 < this.state.value && this.state.value < 7) ? this.state.value : "bug";
         return (
             <div id="diceDiv">
                 <h3 id="currentPlayerNameH1">{this.props.currentPlayerName}</h3>
-                <img id="diceImageId" src={"images/dice" + this.state.value + ".png"} alt="dice" height="64px"/>
+                <img id="diceImageId" src={"images/dice" + value + ".png"} alt="dice" height="64px"/>
                 <br/><br/>
                 <button
                     id="diceButton"
@@ -516,7 +547,9 @@ class QuestionWizard extends React.Component {
                     />
         }
 
-        return componentToRender
+        return (
+            componentToRender
+        );
     }
 }
 
@@ -553,8 +586,7 @@ class DifficultySelector extends React.Component {
     render() {
         return (
             <div id="difficultySelector">
-                <h4>Selecione a dificuldade da pergunta:</h4>
-                <br/>
+                <h4 className="wizardTitle">Selecione a dificuldade da pergunta:</h4>
                 <div className="d-flex flex-column justify-content-center">
                     {
                         [
@@ -582,15 +614,18 @@ class Question extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            id: null,
             image: null,
             questionText: null,
-            rightAnswer: null,
-            wrongAnswers: [null, null, null]
+            answers: [null, null, null, null]
         };
     }
 
-    selectAnswer(answer) {
-        if (answer === this.state.rightAnswer) this.props.onAnswerSelection(this.props.difficultyLevel);
+    async selectAnswer(answer) {
+        let response = await fetch(`http://127.0.0.1:8000/api/questions/${this.state.id}?answer=${answer}`)
+            .then(response => response.json());
+        if (response.data.correct)
+            this.props.onAnswerSelection(this.props.difficultyLevel);
         else this.props.onAnswerSelection(0);
     }
 
@@ -601,8 +636,7 @@ class Question extends React.Component {
     }
 
     render() {
-        let answers = this.state.wrongAnswers
-            .concat([this.state.rightAnswer])
+        let answers = this.state.answers
             .sort(() => Math.random() - 0.5)
             .map((answer, index) =>
                 <button
@@ -773,7 +807,7 @@ class Chest extends React.Component {
     }
 
     onSkipHazard() {
-        this.props.onCompletion(this.state.skipped, this.props.hasHazardItems);
+        this.props.onCompletion(this.state.skipped, this.props.details.hasHazardItems);
     }
 
     render() {
@@ -853,7 +887,7 @@ class Chest extends React.Component {
                                 <li key={necessaryItem}>{necessaryItem}</li>
                             )}
                         </ul>
-                        <p id="hazardFeedbackP">{(this.props.hasHazardItems) ?
+                        <p id="hazardFeedbackP">{(this.props.details.hasHazardItems) ?
                             "Tendo todos os items necessários, conseguiu sobreviver!" :
                             "Não tem os items necessários para sobreviver... Perdeu o jogo!"
                         }</p>
@@ -921,29 +955,215 @@ class Toast extends React.Component {
     }
 }
 
+class PlayerSelector extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            playerSName: null,
+            playerAName: null,
+            playerBName: null
+        };
+    }
+
+    handlePlayerNameChange(event, playerChar) {
+        this.setState({
+            [`player${playerChar}Name`]: event.target.value
+        });
+    }
+
+    handleSubmit(event, numberOfPlayers) {
+        if (numberOfPlayers === 1)
+            this.props.onSubmit(numberOfPlayers, this.state.playerSName);
+        else
+            this.props.onSubmit(numberOfPlayers, this.state.playerAName, this.state.playerBName);
+    }
+
+    render() {
+        return (
+            <div id="playerSelectorDiv">
+                <img id="bigLogoImg" src="images/logo_big_alt.png" width="512" height="315"/>
+                <br/>
+                <div id="registrationDivs">
+                    <div id="singlePlayerDiv" className="registrationDiv p-3">
+                        <h3>Um jogador</h3>
+                        <form id="singlePlayerForm" action="#"
+                              onSubmit={(event) => this.handleSubmit(event, 1)}
+                        >
+                            <input
+                                minLength="3" maxLength="12" placeholder="Nome do jogador" type="text"
+                                id="onePlayerNameInput" className="form-control text-center playerNameInput"
+                                required
+                                value={this.state.playerSName}
+                                onChange={(event) => this.handlePlayerNameChange(event, "S")}
+                            />
+                            <br/>
+                            <input type="submit" value="Jogar" id="onePlayerButton"
+                                   className="btn btn-outline-light btn-lg"/>
+                        </form>
+                    </div>
+                    <div id="twoPlayerDiv" className="registrationDiv p-3">
+                        <h3>Dois jogadores</h3>
+                        <form id="twoPlayerForm" action="#"
+                              onSubmit={(event) => this.handleSubmit(event, 2)}
+                        >
+                            <input minLength="3" maxLength="12" placeholder="Nome do jogador A" type="text"
+                                   id="playerANameInput" className="form-control text-center playerNameInput"
+                                   required
+                                   value={this.state.playerAName}
+                                   onChange={(event) => this.handlePlayerNameChange(event, "A")}
+                            />
+                            <input minLength="3" maxLength="12" placeholder="Nome do jogador B" type="text"
+                                   id="playerBNameInput"
+                                   className="form-control text-center playerNameInput" required
+                                   value={this.state.playerBName}
+                                   onChange={(event) => this.handlePlayerNameChange(event, "B")}
+                            />
+                            <br/>
+                            <input type="submit" value="Jogar" id="twoPlayerButton"
+                                   className="btn btn-outline-light btn-lg"/>
+                        </form>
+                    </div>
+                </div>
+                <Help
+                    buttonId="playerSelectorHelpButton"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" fill="currentColor"
+                         className="bi bi-question-circle" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path
+                            d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
+                    </svg>
+                    <br/>
+                    <small>Ajuda</small>
+                </Help>
+
+            </div>
+        );
+    }
+}
+
+class Help extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            selected: false
+        };
+        this.toggle = this.toggle.bind(this)
+    }
+
+    toggle() {
+        this.setState({selected: (!this.state.selected)})
+    }
+
+    render() {
+        return (
+            <div>
+                <button
+                    type="button"
+                    onClick={() => this.toggle()}
+                    id={this.props.buttonId}
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModal"
+                >
+                    {this.props.children}
+                </button>
+                <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel"
+                     aria-hidden="true">
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <img src="images/logo_horizontal.png" id="helpLogo"/>
+                                <button type="button" className="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                            </div>
+                            <div className="modal-body">
+                                <h1 className="text-center">Regras do Jogo</h1>
+                                <p>
+                                    Nº de jogadores: 1 ou 2. <br/>
+                                    (No caso de 2 jogadores, jogam alternadamente.)<br/>
+                                    Nº de casas do tabuleiro: 50<br/>
+                                    Nº de <b>vidas</b> <img src="images/life.png" className="helpIcon"/> do jogador: 5<br/>
+                                </p>
+                                <p className="text-center">
+                                    <img src="images/winner.png" className="m-auto helpIconBig"/> <br/>
+                                </p>
+                                <p>
+                                    Para ganhar <img src="images/winner.png" className="helpIcon"/>, um jogador deve colecionar 3 <b>peças do mapa</b> <img src="images/map_icon.png" className="helpIcon"/>. Estas estão guardadas em <b>cofres</b> <img src="images/chest.png" className="helpIcon"/> espalhados pelo tabuleiro.<br/>
+                                    Se um jogador perder todas as suas <b>vidas</b> <img src="images/life.png" className="helpIcon"/>, perde o jogo. Caso seja um jogo de dois jogadores, o seu oponente ganha. <br/>
+                                    O jogador avança no tabuleiro através do lançamento do dado.
+                                </p>
+                                <p className="text-center">
+                                    <img src="images/dice6.png" className="m-auto helpIconBig"/> <br/>
+                                </p>
+                                <p>
+                                    Sempre que o jogador lança o dado:
+                                    <ol>
+                                        <li>Avança para a <b>casa</b> <img src="images/tile0.png" className="helpIcon"/> correspondente</li>
+                                        <li>Responde a uma pergunta depois de escolher o respetivo grau de dificuldade (1, 2 ou 3).
+                                            <ul>
+                                                <li>Se responder corretamente, ganha 1, 2 ou 3 <b>moedas</b> <img src="images/coin.png" className="helpIcon"/>, dependendo da dificuldade</li>
+                                                <li>Caso contrário, perde uma <b>vida</b> <img src="images/life.png" className="helpIcon"/></li>
+                                            </ul>
+                                        </li>
+                                        <li>Acede à loja, onde pode trocar <b>moedas</b> <img src="images/coin.png" className="helpIcon"/> por items úteis para a sua aventura.</li>
+                                    </ol>
+                                </p>
+                                <p className="text-center">
+                                    <img src="images/tile_pico.png" className="m-auto helpIconBig"/> <br/>
+                                </p>
+                                <p>
+                                    Nas <b>casas especiais</b> <img src="images/tile_pico.png" className="helpIcon"/> são propostas tarefas aos jogadores. <br/>
+                                    Estas tarefas requerem o consumo de um item apropriado à situação. Caso não o tenha no seu inventário, o jogador pode trocar as suas moedas <img src="images/coin.png" className="helpIcon"/> para o obter.<br/>
+                                    O jogador pode optar por não executar a tarefa, mesmo que reúna as condições para a poder executar (perde, no entanto, uma <b>vida</b> <img src="images/life.png" className="helpIcon"/>).
+                                </p>
+                                <p className="text-center">
+                                    <img src="images/chest.png" className="m-auto helpIconBig"/> <br/>
+                                </p>
+                                <p>
+                                    Nas casas 12, 25 e 39 encontram-se os <b>cofres</b> <img src="images/chest.png" className="helpIcon"/> onde estão guardadas as <b>peças do mapa</b> <img src="images/map_icon.png"  className="helpIcon"/>.
+                                    Para abri-los, é necessária uma <b>chave</b> <img src="images/chave_vermelha.png"  className="helpIcon"/> da mesma cor do cofre. Esta chave pode ser comprada na loja.
+                                    Abrir os cofres pode, no entanto, enfurecer os seus guardiões... <b><i>Prepare-se!</i></b>
+                                </p>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Fechar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}
+
 class Game extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
+            numberOfPlayers: null,
+
             currentPlayer: "A",
             lastDiceValue: 0,
 
-            playerAName: "Vermelho",
-            playerALives: 5,
-            playerACoins: 50,
-            playerAMapPieces: 0,
+            playerAName: null,
+            playerALives: PLAYER_A_LIVES,
+            playerACoins: PLAYER_A_COINS,
+            playerAMapPieces: PLAYER_A_MAP_PIECES,
             playerACurrentTile: 1,
             playerAInventory: {},
             playerACommunityWork: false,
+            playerAOpenedChestTiles: [],
 
-            playerBName: "Azul",
-            playerBLives: 5,
-            playerBCoins: 50,
-            playerBMapPieces: 0,
-            playerBCurrentTile: 1,
+            playerBName: null,
+            playerBLives: PLAYER_B_LIVES,
+            playerBCoins: PLAYER_B_COINS,
+            playerBMapPieces: PLAYER_B_MAP_PIECES,
+            playerBCurrentTile: null,
             playerBInventory: {},
-            playerBCommunityWork: false
+            playerBCommunityWork: false,
+            playerBOpenedChestTiles: []
         }
     }
 
@@ -990,7 +1210,8 @@ class Game extends React.Component {
     }
 
     switchPlayer() {
-        this.setState({ currentPlayer: (this.state.currentPlayer === "B")? "A" : "B" })
+        if (this.state.numberOfPlayers === 2)
+            this.setState({ currentPlayer: (this.state.currentPlayer === "B")? "A" : "B" });
     }
 
     getTaskDetails(currentPlayerInTaskTile) {
@@ -1011,8 +1232,8 @@ class Game extends React.Component {
 
     checkIfPlayerHasHazardItems(currentPlayerInChestTile) {
         if (currentPlayerInChestTile) {
-
-            return this.props.chestTiles[this.state[`player${this.state.currentPlayer}CurrentTile`]].hazard.necessaryItems
+            let currentTile = this.state[`player${this.state.currentPlayer}CurrentTile`];
+            return this.props.chestTiles[currentTile].hazard.necessaryItems
                 .every((item) => Object.keys(this.state[`player${this.state.currentPlayer}Inventory`]).includes(item));}
         else return null;
     }
@@ -1084,7 +1305,10 @@ class Game extends React.Component {
 
         if (success){
             this.consumeItem(playerChar, keyName);
-            this.setState({[`player${playerChar}MapPieces`]: this.state[`player${playerChar}MapPieces`] + 1});
+            this.setState({
+                [`player${playerChar}OpenedChestTiles`]:
+                    [...this.state[`player${playerChar}OpenedChestTiles`], this.state[`player${playerChar}CurrentTile`]]
+            });
         }
         else
             this.setState({[`player${playerChar}Lives`]: this.state[`player${playerChar}Lives`] - 1});
@@ -1093,11 +1317,22 @@ class Game extends React.Component {
     }
 
     consumeItemsOrKill(playerChar, hasNecessaryItems) {
-        if (hasNecessaryItems)
+        if (hasNecessaryItems) {
             this.props.chestTiles[this.state[`player${playerChar}CurrentTile`]].hazard.necessaryItems
             .forEach((item) => {this.consumeItem(playerChar, item)});
+            this.setState({[`player${playerChar}MapPieces`]: this.state[`player${playerChar}MapPieces`] + 1});
+        }
         else
             this.setState({[`player${playerChar}Lives`]: 0});
+    }
+
+    selectPlayers(numberOfPlayers, playerAName, playerBName) {
+        this.setState({
+            numberOfPlayers: numberOfPlayers,
+            playerAName: playerAName,
+            playerBName: playerBName,
+            playerBCurrentTile: (numberOfPlayers === 2) ? 1 : null
+        })
     }
 
     render() {
@@ -1124,7 +1359,15 @@ class Game extends React.Component {
         let currentPlayerInTaskTile = (currentPlayerTile  in this.props.taskTiles);
         let currentPlayerInChestTile = (currentPlayerTile in this.props.chestTiles);
 
-        return (
+        if (!this.state.playerAName) {
+            return (
+                <PlayerSelector
+                    onSubmit={(numberOfPlayers, playerAName, playerBName) =>
+                        this.selectPlayers(numberOfPlayers, playerAName, playerBName)}
+                />
+                )
+        }
+        else return (
             <div id="gameDiv" style={{display: "block"}}>
                 <div id="header">
                     {/*<nav className="navbar navbar-light bg-light" id="gloriaHeader">
@@ -1133,13 +1376,27 @@ class Game extends React.Component {
                         </div>
                     </nav>*/}
                     <PlayerStatuses
+                        numberOfPlayers={this.state.numberOfPlayers}
                         players={players}
                         currentPlayer={this.state.currentPlayer}
                         shopInventory={this.props.shopInventory}
                     />
                 </div>
+                <Help
+                    buttonId="playerSelectorHelpButton"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" fill="currentColor"
+                         className="bi bi-question-circle" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path
+                            d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
+                    </svg>
+                    <br/>
+                    <small>Regras</small>
+                </Help>
                 <Board
                     numberOfTiles={50}
+                    numberOfPlayers={this.state.numberOfPlayers}
                     taskTiles={this.props.taskTiles}
                     chestTiles={this.props.chestTiles}
                     normalTileImages={this.props.normalTileImages}
@@ -1150,13 +1407,14 @@ class Game extends React.Component {
                     {/*<div id="dummyFooter"/>*/}
 
                 <GameWizard
-                    winner={
+                    loser={
                         (this.state.playerALives === 0 || this.state.playerBMapPieces === 3) ?
-                            {character: "B", name: this.state.playerBName} :
+                            {character: "A", opponent: {name: this.state.playerBName, character: "B"}} :
                             (this.state.playerBLives === 0 || this.state.playerAMapPieces === 3) ?
-                                {character: "A", name: this.state.playerAName} :
+                                {character: "B", opponent: {name: this.state.playerAName, character: "A"}} :
                                 null
                     }
+
 
                     currentPlayer={{
                         name: this.state[`${currentPlayer}Name`],
@@ -1167,7 +1425,10 @@ class Game extends React.Component {
                         task: this.getTaskDetails(currentPlayerInTaskTile),
                         chest: {
                             ...this.props.chestTiles[currentPlayerTile],
-                            hasHazardItems: this.checkIfPlayerHasHazardItems(currentPlayerInChestTile)
+                            hasHazardItems: this.checkIfPlayerHasHazardItems(currentPlayerInChestTile),
+                            opened:
+                                this.state[`${currentPlayer}OpenedChestTiles`]
+                                    .includes(currentPlayerTile)
                         }
                     }}
 
@@ -1276,13 +1537,10 @@ let chests = Object.values(chestTiles)
     .sort(() => Math.random() - 0.5);
 Object.keys(chestTiles).forEach((tileNumber) => chestTiles[tileNumber].chest = chests.pop());
 
-
-
 ReactDOM.render(
     <Game
         shopInventory={require("./shop.json")}
-        taskTiles={
-            {
+        taskTiles={{
                 6: {
                     backgroundImage: 'tile_santamaria.png',
                     taskDescription: "Fazer uma viagem de barco para ver baleias.",
@@ -1338,11 +1596,10 @@ ReactDOM.render(
                     location: null,
                     necessaryItemPrice: null,
                     hasNecessaryItem: null,
-                    canCompleteTask: null
+                    canCompleteTask: null,
+                    valueOf: () => null
                 }
-            }
-        }
-
+            }}
         chestTiles={chestTiles}
     />,
     document.getElementById('root')
